@@ -26,18 +26,18 @@ TOKEN = "8562672356:AAFzMmXa7Q-20tNHFfc_q2XJLZSvijMNDlc"
 ADMIN_ID = 6765343155 
 
 STOCK = {
-    "nutrition1": ["NUTRI-111", "NUTRI-222"],
-    "shakeee": ["SHAKE-777", "SHAKE-888"],
-    "10usd": ["10USD-AAA", "10USD-BBB"]
+    "1": ["NUTRI-111", "NUTRI-222"],
+    "2": ["SHAKE-777", "SHAKE-888"],
+    "3": ["10USD-AAA", "10USD-BBB"]
 }
 
 PRICES = {"nutrition1": "5.000đ", "shakeee": "10.000đ", "10usd": "250.000đ"}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
-        [InlineKeyboardButton(f"🍎 Nutrition1 ({PRICES['nutrition1']})", callback_data='buy_nutrition1')],
-        [InlineKeyboardButton(f"🥤 Shakeee ({PRICES['shakeee']})", callback_data='buy_shakeee')],
-        [InlineKeyboardButton(f"⭐ 10U.SD ({PRICES['10usd']})", callback_data='buy_10usd')]
+        [InlineKeyboardButton(f"🍎 Gói 1000 build ({PRICES['1']})", callback_data='buy_nutrition1')],
+        [InlineKeyboardButton(f"🥤 Gói 4000 build ({PRICES['2']})", callback_data='buy_shakeee')],
+        [InlineKeyboardButton(f"⭐ Gói 8000 build ({PRICES['3']})", callback_data='buy_10usd')]
     ]
     await update.message.reply_text("🏪 SHOP XWORLD\nChọn gói bạn muốn mua:", reply_markup=InlineKeyboardMarkup(keyboard))
 
@@ -49,7 +49,7 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await query.edit_message_text(
         text=f"🛒 GÓI: {product.upper()}\n💰 GIÁ: {PRICES[product]}\n\n"
-             f"💳 MB BANK: NGUYỄN VĂN TÀI\nSTK: [STK CỦA BẠN]\n"
+             f"💳 VIETCOMBANK: NGUYỄN VĂN TÀI\nSTK: 1051116962\n"
              f"Nội dung: `{product} {user.id}`"
     )
 
