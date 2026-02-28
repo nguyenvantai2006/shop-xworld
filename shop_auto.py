@@ -25,19 +25,26 @@ if sys.platform == 'win32':
 TOKEN = "8562672356:AAFzMmXa7Q-20tNHFfc_q2XJLZSvijMNDlc"
 ADMIN_ID = 6765343155 
 
+# Đã sửa lại Key cho khớp với callback_data
 STOCK = {
-    "1": ["NUTRI-111", "NUTRI-222"],
-    "2": ["SHAKE-777", "SHAKE-888"],
-    "3": ["10USD-AAA", "10USD-BBB"]
+    "nutrition1": ["NUTRI-111", "NUTRI-222"],
+    "shakeee": ["SHAKE-777", "SHAKE-888"],
+    "10usd": ["10USD-AAA", "10USD-BBB"]
 }
 
-PRICES = {"nutrition1": "5.000đ", "shakeee": "10.000đ", "10usd": "250.000đ"}
+# Danh sách giá tiền chuẩn
+PRICES = {
+    "nutrition1": "5.000đ", 
+    "shakeee": "10.000đ", 
+    "10usd": "250.000đ"
+}
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Đã sửa lỗi KeyError: '1' bằng cách gọi đúng tên gói trong PRICES
     keyboard = [
-        [InlineKeyboardButton(f"🍎 Gói 1000 build ({PRICES['1']})", callback_data='buy_nutrition1')],
-        [InlineKeyboardButton(f"🥤 Gói 4000 build ({PRICES['2']})", callback_data='buy_shakeee')],
-        [InlineKeyboardButton(f"⭐ Gói 8000 build ({PRICES['3']})", callback_data='buy_10usd')]
+        [InlineKeyboardButton(f"🍎 Gói 1000 build ({PRICES['nutrition1']})", callback_data='buy_nutrition1')],
+        [InlineKeyboardButton(f"🥤 Gói 4000 build ({PRICES['shakeee']})", callback_data='buy_shakeee')],
+        [InlineKeyboardButton(f"⭐ Gói 8000 build ({PRICES['10usd']})", callback_data='buy_10usd')]
     ]
     await update.message.reply_text("🏪 SHOP XWORLD\nChọn gói bạn muốn mua:", reply_markup=InlineKeyboardMarkup(keyboard))
 
@@ -70,7 +77,8 @@ async def handle_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     if data[0] == "pay":
         uid, prod = int(data[1]), data[2]
-        if prod in STOCK and STOCK[prod]:
+        # Kiểm tra kho hàng theo tên gói
+        if prod in STOCK and len(STOCK[prod]) > 0:
             code = STOCK[prod].pop(0)
             await context.bot.send_message(chat_id=uid, text=f"✅ Giao dịch thành công!\n🎁 Mã {prod.upper()}: `{code}`")
             await query.edit_message_text(text=f"🚀 ĐÃ DUYỆT!\nKhách: {uid}\nMã: `{code}`")
@@ -81,7 +89,7 @@ async def handle_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 # --- PHẦN 3: KÍCH HOẠT SONG SONG ---
 if __name__ == '__main__':
-    # Chạy Flask ở một luồng (thread) riêng để không làm kẹt Bot
+    # Chạy Flask ở một luồng (thread) riêng để Render không báo lỗi Port
     Thread(target=run_web).start()
     
     # Chạy Bot Telegram
