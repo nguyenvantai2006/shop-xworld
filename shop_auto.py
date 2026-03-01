@@ -54,12 +54,24 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     product = query.data.split('_')[1]
     user = query.from_user
     
-    await query.edit_message_text(
-        text=f"🛒 GÓI: {product.upper()}\n💰 GIÁ: {PRICES[product]}\n\n"
-             f"💳 VIETCOMBANK: NGUYỄN VĂN TÀI\nSTK: 1051116962\n"
-             f"Nội dung: `{product} {user.id}`"
+    # Lấy giá tiền (xóa chữ 'đ' và dấu '.' để lấy số nguyên)
+    price_raw = PRICES[product].replace('đ', '').replace('.', '')
+    # Tạo nội dung chuyển khoản tự động
+    content = f"{product}{user.id}"
+    
+    # Link tạo QR động từ VietQR
+    qr_url = f"https://img.vietqr.io/image/vcb-1051116962-compact2.jpg?amount={price_raw}&addInfo={content}&accountName=NGUYEN%20VAN%20TAI"
+
+    # Gửi ảnh QR cho khách kèm hướng dẫn
+    await context.bot.send_photo(
+        chat_id=user.id,
+        photo=qr_url,
+        caption=f"🛒 GÓI: {product.upper()}\n💰 GIÁ: {PRICES[product]}\n\n"
+                f"📌 Bạn chỉ cần quét mã QR trên để thanh toán.\n"
+                f"⚠️ Nội dung chuyển khoản đã được tạo sẵn, vui lòng không thay đổi!"
     )
 
+    # Thông báo cho bạn (Admin) như cũ
     admin_kb = [[
         InlineKeyboardButton("✅ Duyệt", callback_data=f"pay_{user.id}_{product}"),
         InlineKeyboardButton("❌ Hủy", callback_data=f"can_{user.id}")
@@ -69,7 +81,6 @@ async def handle_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
         text=f"🔔 ĐƠN MỚI: {user.full_name}\n📦 Gói: {product}\n🆔 ID: `{user.id}`",
         reply_markup=InlineKeyboardMarkup(admin_kb)
     )
-
 async def handle_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
